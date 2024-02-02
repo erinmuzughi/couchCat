@@ -26,5 +26,4 @@ public class CouchCatBackendApplication {
 		SpringApplication.run(CouchCatBackendApplication.class, args);
 	}
 
-
 }

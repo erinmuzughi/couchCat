@@ -58,13 +58,14 @@ public class UserController {
     public ResponseEntity<String> secureGetEndpoint(
             @PathVariable Integer id,
             @CookieValue(name = "sessionId", required = false) String sessionId) {
-        return userService.autheticateSession(id, sessionId);
+        return userService.authenticateSession(id, sessionId);
     }
 
     @PostMapping(value = "/logout", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> logoutUser(@CookieValue(name = "sessionId", required = false) String sessionId) {
             return userService.logoutUser(sessionId);
     }
+    //TODO: Refactor so the business logic is handled by UserService
     @DeleteMapping
     @Transactional
     public ResponseEntity<String> deleteUser(@CookieValue(name = "sessionId", required = false) String sessionId) {

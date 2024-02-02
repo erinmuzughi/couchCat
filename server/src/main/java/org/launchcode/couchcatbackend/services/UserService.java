@@ -1,7 +1,9 @@
 package org.launchcode.couchcatbackend.services;
 
 import org.launchcode.couchcatbackend.configuration.AuthenticationConfig;
+import org.launchcode.couchcatbackend.data.EmailVerificationTokenRepository;
 import org.launchcode.couchcatbackend.data.UserRepository;
+import org.launchcode.couchcatbackend.models.EmailVerificationToken;
 import org.launchcode.couchcatbackend.models.User;
 import org.launchcode.couchcatbackend.utils.HTTPResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,12 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    EmailVerificationTokenRepository emailVerificationTokenRepository;
+
+    @Autowired
+    EmailService emailService;
 
     @Autowired
     private AuthenticationConfig authenticationConfig;
@@ -96,7 +104,7 @@ public class UserService {
     /**
      * AUTHENTICATE SESSION
      **/
-    public ResponseEntity<String> autheticateSession(Integer id, String sessionId) {
+    public ResponseEntity<String> authenticateSession(Integer id, String sessionId) {
         User retrievedUser = userRepository.findBySessionId(sessionId);
         if (retrievedUser != null && id != null) {
             Optional<User> providedUser = userRepository.findById(id);

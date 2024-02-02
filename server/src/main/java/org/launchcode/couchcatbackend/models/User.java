@@ -39,16 +39,18 @@ public class User {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String sessionId;
 
+    private boolean enabled;
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JsonIgnore
     private final List<Movie> watchlist = new ArrayList<>();
 
-    public User(String firstName, String lastName, String email, String password) {
+    public User(String firstName, String lastName, String email, String password, boolean enabled) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
+        this.enabled=false;
     }
 
     public User() {}
@@ -95,6 +97,14 @@ public class User {
 
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public List<Movie> getWatchlist() {
