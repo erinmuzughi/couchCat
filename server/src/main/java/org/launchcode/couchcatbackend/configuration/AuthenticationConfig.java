@@ -1,6 +1,8 @@
 package org.launchcode.couchcatbackend.configuration;
 
+import org.launchcode.couchcatbackend.data.EmailVerificationTokenRepository;
 import org.launchcode.couchcatbackend.data.UserRepository;
+import org.launchcode.couchcatbackend.models.EmailVerificationToken;
 import org.launchcode.couchcatbackend.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -11,10 +13,20 @@ import java.util.UUID;
 @Configuration
 public class AuthenticationConfig {
     private final UserRepository userRepository;
+    private final EmailVerificationTokenRepository emailVerificationTokenRepository;
 
     @Autowired
-    public AuthenticationConfig(UserRepository userRepository) {
+    public AuthenticationConfig(UserRepository userRepository, EmailVerificationTokenRepository emailVerificationTokenRepository) {
         this.userRepository = userRepository;
+        this.emailVerificationTokenRepository = emailVerificationTokenRepository;
+    }
+    //creates the email verification token at registration
+    public void createVerificationToken(User user){
+        EmailVerificationToken newToken = new EmailVerificationToken();
+        String token = UUID.randomUUID().toString();
+        newToken.setToken(token);
+        newToken.setUser(user);
+        emailVerificationTokenRepository.save(newToken);
     }
 
     //creates the sessionId value at login, we change sessionId at logout to null

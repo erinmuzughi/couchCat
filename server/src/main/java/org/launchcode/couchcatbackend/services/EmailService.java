@@ -1,5 +1,6 @@
 package org.launchcode.couchcatbackend.services;
 
+import org.launchcode.couchcatbackend.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -19,4 +20,6 @@ public class EmailService {
         public void sendEmail(SimpleMailMessage email) {
             javaMailSender.send(email);
         }
+
+
 }

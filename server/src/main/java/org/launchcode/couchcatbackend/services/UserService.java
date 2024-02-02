@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -59,7 +60,23 @@ public class UserService {
         newUser.setPassword(passwordEncoder.encode(user.getPassword()));
 
         userRepository.save(newUser);
+        //call method to create email verification token associated to this newUser and save it
+        authenticationConfig.createVerificationToken(newUser);
+        //call method to send the verification email
+        sendVerificationEmail(newUser);
         return HTTPResponseBuilder.created("User was successfully registered.");
+    }
+
+
+    //TODO: create a page on the front end to direct the user to, but for now, using backend to test
+        private void sendVerificationEmail(User user) {
+        String token = String.valueOf(emailVerificationTokenRepository.findByUser(user));
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(user.getEmail());
+        mailMessage.setSubject("Verify Email to Complete Registration");
+        mailMessage.setText("To verify your email and confirm your account, please click the link below : "
+                +"http://localhost:8080/confirm-account?token="+token);
+        emailService.sendEmail(mailMessage);
     }
 
     /**

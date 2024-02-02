@@ -29,9 +29,13 @@ public class EmailVerificationToken {
         return new Date(cal.getTime().getTime());
     }
 
+
     public EmailVerificationToken(String token, User user) {
         this.token = token;
         this.user = user;
+    }
+
+    public EmailVerificationToken() {
     }
 
     public int getId() {
