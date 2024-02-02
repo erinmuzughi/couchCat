@@ -86,22 +86,26 @@ public class UserService {
     }
 
     public ResponseEntity<String> confirmEmail(String token) {
+        System.out.println(token);
         EmailVerificationToken verificationToken = emailVerificationTokenRepository.findByToken(token);
         LocalDateTime currentTime = LocalDateTime.now();
         //confirm it's not null and that it's not expired.
-        if (verificationToken != null && currentTime.isBefore(verificationToken.getExpiryDate())) {
-            //find the userId associated with the token and change that user's enabled state to true, save the user and return ok response
-            Integer userId = emailVerificationTokenRepository.findUserIdByToken(token);
-            Optional<User> result = userRepository.findById(userId);
-            if (result.isPresent()) {
-                User user = result.get();
-                user.setEnabled(true);
-                userRepository.save(user);
-                return HTTPResponseBuilder.ok("Email verified successfully");
-            }
-            return HTTPResponseBuilder.badRequest("Error: Couldn't verify email");
+        if (verificationToken != null) {
+//            if (currentTime.isBefore(verificationToken.getExpiryDate())) {
+                //find the userId associated with the token and change that user's enabled state to true, save the user and return ok response
+                Integer userId = emailVerificationTokenRepository.findUserIdByToken(token);
+                Optional<User> result = userRepository.findById(userId);
+                if (result.isPresent()) {
+                    User user = result.get();
+                    user.setEnabled(true);
+                    userRepository.save(user);
+                    return HTTPResponseBuilder.ok("Email verified successfully");
+                }
+                return HTTPResponseBuilder.badRequest("Error: Couldn't verify email");
+//            }
+//            return HTTPResponseBuilder.badRequest("Error: Token expired on: " + verificationToken.getExpiryDate());
         }
-        return HTTPResponseBuilder.badRequest("Error: Token either does not exist or is expired");
+        return HTTPResponseBuilder.badRequest("Error: Token does not exist");
     }
 
     /**

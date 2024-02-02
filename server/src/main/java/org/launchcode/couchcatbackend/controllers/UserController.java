@@ -49,7 +49,7 @@ public class UserController {
         return userService.registerUser(user);
     }
 
-    @RequestMapping(value="/confirm-account", method= {RequestMethod.GET, RequestMethod.POST})
+    @GetMapping(value="/confirm-account")
     public ResponseEntity<String> confirmUserAccount(@RequestParam("token")String emailVerificationToken) {
         return userService.confirmEmail(emailVerificationToken);
     }
