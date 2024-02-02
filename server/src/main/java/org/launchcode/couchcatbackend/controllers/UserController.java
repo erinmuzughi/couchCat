@@ -49,6 +49,11 @@ public class UserController {
         return userService.registerUser(user);
     }
 
+    @RequestMapping(value="/confirm-account", method= {RequestMethod.GET, RequestMethod.POST})
+    public ResponseEntity<String> confirmUserAccount(@RequestParam("token")String emailVerificationToken) {
+        return userService.confirmEmail(emailVerificationToken);
+    }
+
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> userLogin(@RequestBody User user) {
         return userService.authenticateUser(user);

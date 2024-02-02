@@ -7,6 +7,8 @@ import org.launchcode.couchcatbackend.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -21,13 +23,13 @@ public class AuthenticationConfig {
         this.emailVerificationTokenRepository = emailVerificationTokenRepository;
     }
     //creates the email verification token at registration
-    public void createVerificationToken(User user){
-        EmailVerificationToken newToken = new EmailVerificationToken();
-        String token = UUID.randomUUID().toString();
-        newToken.setToken(token);
-        newToken.setUser(user);
-        emailVerificationTokenRepository.save(newToken);
-    }
+//    public void createVerificationToken(User user){
+//        EmailVerificationToken newToken = new EmailVerificationToken();
+//        String token = UUID.randomUUID().toString();
+//        newToken.setToken(token);
+//        newToken.setUser(user);
+//        emailVerificationTokenRepository.save(newToken);
+//    }
 
     //creates the sessionId value at login, we change sessionId at logout to null
     // and regenerate session ID upon login to protect against session fixation

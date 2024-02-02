@@ -16,7 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -60,23 +63,45 @@ public class UserService {
         newUser.setPassword(passwordEncoder.encode(user.getPassword()));
 
         userRepository.save(newUser);
-        //call method to create email verification token associated to this newUser and save it
-        authenticationConfig.createVerificationToken(newUser);
-        //call method to send the verification email
+        //call method to create email verification token associated to this newUser and save it and send the verification email
         sendVerificationEmail(newUser);
         return HTTPResponseBuilder.created("User was successfully registered.");
     }
 
 
     //TODO: create a page on the front end to direct the user to, but for now, using backend to test
-        private void sendVerificationEmail(User user) {
-        String token = String.valueOf(emailVerificationTokenRepository.findByUser(user));
+    private void sendVerificationEmail(User user) {
+        EmailVerificationToken newToken = new EmailVerificationToken();
+        String token = UUID.randomUUID().toString();
+        newToken.setToken(token);
+        newToken.setUser(user);
+        emailVerificationTokenRepository.save(newToken);
+
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(user.getEmail());
         mailMessage.setSubject("Verify Email to Complete Registration");
         mailMessage.setText("To verify your email and confirm your account, please click the link below : "
-                +"http://localhost:8080/confirm-account?token="+token);
+                +"http://localhost:3000/confirm-account?token="+token);
         emailService.sendEmail(mailMessage);
+    }
+
+    public ResponseEntity<String> confirmEmail(String token) {
+        EmailVerificationToken verificationToken = emailVerificationTokenRepository.findByToken(token);
+        LocalDateTime currentTime = LocalDateTime.now();
+        //confirm it's not null and that it's not expired.
+        if (verificationToken != null && currentTime.isBefore(verificationToken.getExpiryDate())) {
+            //find the userId associated with the token and change that user's enabled state to true, save the user and return ok response
+            Integer userId = emailVerificationTokenRepository.findUserIdByToken(token);
+            Optional<User> result = userRepository.findById(userId);
+            if (result.isPresent()) {
+                User user = result.get();
+                user.setEnabled(true);
+                userRepository.save(user);
+                return HTTPResponseBuilder.ok("Email verified successfully");
+            }
+            return HTTPResponseBuilder.badRequest("Error: Couldn't verify email");
+        }
+        return HTTPResponseBuilder.badRequest("Error: Token either does not exist or is expired");
     }
 
     /**

@@ -1,8 +1,11 @@
 package org.launchcode.couchcatbackend.models;
 
 import jakarta.persistence.*;
+import org.springframework.cglib.core.Local;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -16,23 +19,18 @@ public class EmailVerificationToken {
 
     private String token;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(nullable = false, name = "userId")
     private User user;
 
-    private Date expireDate;
-
-    private Date calculateExpireDate(int expireTimeInMinutes) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Timestamp(cal.getTime().getTime()));
-        cal.add(Calendar.MINUTE, expireTimeInMinutes);
-        return new Date(cal.getTime().getTime());
-    }
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(EXPIRATION);
 
 
-    public EmailVerificationToken(String token, User user) {
+    public EmailVerificationToken(String token, User user, LocalDateTime expiryDate) {
         this.token = token;
         this.user = user;
+        this.expiryDate = expiryDate;
     }
 
     public EmailVerificationToken() {
@@ -58,11 +56,11 @@ public class EmailVerificationToken {
         this.user = user;
     }
 
-    public Date getExpireDate() {
-        return expireDate;
+    public LocalDateTime getExpiryDate() {
+        return expiryDate;
     }
 
-    public void setExpireDate(Date expireDate) {
-        this.expireDate = expireDate;
+    public void setExpiryDate(LocalDateTime expiryDate) {
+        this.expiryDate = expiryDate;
     }
 }
