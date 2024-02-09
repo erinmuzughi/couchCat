@@ -89,9 +89,9 @@ public class UserService {
         System.out.println(token);
         EmailVerificationToken verificationToken = emailVerificationTokenRepository.findByToken(token);
         LocalDateTime currentTime = LocalDateTime.now();
-        //confirm it's not null and that it's not expired.
+//        confirm it's not null and that it's not expired.
         if (verificationToken != null) {
-//            if (currentTime.isBefore(verificationToken.getExpiryDate())) {
+            if (currentTime.isBefore(verificationToken.getExpiryDate())) {
                 //find the userId associated with the token and change that user's enabled state to true, save the user and return ok response
                 Integer userId = emailVerificationTokenRepository.findUserIdByToken(token);
                 Optional<User> result = userRepository.findById(userId);
@@ -102,8 +102,9 @@ public class UserService {
                     return HTTPResponseBuilder.ok("Email verified successfully");
                 }
                 return HTTPResponseBuilder.badRequest("Error: Couldn't verify email");
-//            }
-//            return HTTPResponseBuilder.badRequest("Error: Token expired on: " + verificationToken.getExpiryDate());
+            }
+            return HTTPResponseBuilder.badRequest("Error: Token expired on: " + verificationToken.getExpiryDate());
+            //TODO: create method to allow user to generate a new token
         }
         return HTTPResponseBuilder.badRequest("Error: Token does not exist");
     }

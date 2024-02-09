@@ -50,8 +50,8 @@ public class UserController {
     }
 
     @GetMapping(value="/confirm-account")
-    public ResponseEntity<String> confirmUserAccount(@RequestParam("token")String emailVerificationToken) {
-        return userService.confirmEmail(emailVerificationToken);
+    public ResponseEntity<String> confirmUserAccount(@RequestParam("token")String token) {
+        return userService.confirmEmail(token);
     }
 
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -97,7 +97,7 @@ public class UserController {
             userRepository.save(user);
             userService.logoutUser(sessionId);
             userRepository.deleteById(id);
-            //From Erin: ensures we also expire the cookie in the browser as well within the response,
+            //ensures we also expire the cookie in the browser as well within the response,
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.SET_COOKIE, "sessionId=; Max-Age=0; HttpOnly; SameSite=None; Secure");
             return HTTPResponseBuilder.ok("The account associated with email address " + email + " was deleted.", headers);
