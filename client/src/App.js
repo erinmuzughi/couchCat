@@ -10,6 +10,7 @@ import SingleMovie from "./pages/SingleMovie.jsx";
 import userContext from "./utils/userContext.js";
 import ProfilePage from "./pages/ProfilePage.jsx";
 import ProtectedRoutes from "./components/ProtectedRoutes.jsx";
+import EmailVerificationPage from "./pages/EmailVerificationPage.jsx";
 
 function App() {
 
@@ -120,6 +121,7 @@ function App() {
           <Route path="movie" element={<SingleMovie />} />
           <Route element={<ProtectedRoutes />}>
           <Route path="profile" element={<ProfilePage />} />
+          <Route path="confirm-account?token={token}" element={<EmailVerificationPage />} />
           </Route>
         </Routes>
       </userContext.Provider>

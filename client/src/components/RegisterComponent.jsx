@@ -8,7 +8,8 @@ import axios from "axios";
 function RegisterComponent() {
   const [failMessage, setFailMessage] = useState(null);
   const navigate = useNavigate();
-
+  const [email, setEmail] = useState('');
+  const [verificationStatus, setVerificationStatus] = useState(null);
 
   const initialValues = {
     firstName: "",
@@ -31,7 +32,10 @@ function RegisterComponent() {
     const registerUrl = "http://localhost:8080/user/register";
     const {emailConfirmation, passwordConfirmation, ...user} = initialValues // decunstraction of the intialValues object the 
 
-    
+    const handleEmailChange = (event) => {
+      setEmail(event.target.value);
+    };
+
     const headersObj = {
     "Content-Type": "application/json"
     }
@@ -41,10 +45,13 @@ function RegisterComponent() {
     console.log("response from backend => ", response);
 
         //redirects to login page
-        navigate('/login');;
+        // navigate('/login');;
+        setVerificationStatus('success');
+        console.log('Email sent successfully!', response.data);
   })
   .catch((error) => {
     console.error("error while backend calling ", error);
+   
 
     if (error.response) {
     // The request was made, server responded with a status code outside of 2xx
@@ -63,8 +70,18 @@ function RegisterComponent() {
       console.log("Error message:", error.message);
       setFailMessage("Registration Failed: Something went wrong, please try again");
   }
+  setVerificationStatus('error');
+  console.error('Failed to send email:', error);
 });
 };
+
+let statusMessage = null;
+    if (verificationStatus === 'success') {
+      statusMessage = <div>You have successfully registered. Please check your email and click the link to verify your email address.</div>;
+    } else if (verificationStatus === 'error') {
+      statusMessage = <div>Failed to send verification email. Please try again.</div>;
+    }
+  
 
 const validationSchema = Yup.object().shape({
     firstName: Yup.string().required("First Name is required"),
@@ -87,7 +104,7 @@ const validationSchema = Yup.object().shape({
   });
 
   return (
-    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
+   <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
       {(props) => (
         <Form>
           <Box
@@ -125,6 +142,13 @@ const validationSchema = Yup.object().shape({
                   {failMessage}
                 </Typography>
               )}
+              {statusMessage && (
+              <Typography variant="standard" 
+              color="secondary" 
+              sx={{ marginTop: "1rem" }}>
+              {statusMessage}
+            </Typography>
+            )}
             <Field
               as={TextField}
               margin="normal"

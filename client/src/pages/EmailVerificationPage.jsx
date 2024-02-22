@@ -1,10 +1,10 @@
 import React from 'react';
-import EmailVerificationComponent from '../components/EmailVerificationComponent';
+import EmailVerificationSuccess from '../components/EmailVerificationSuccessComponent';
 
 export default function  EmailVerificationPage() {
   return (
     <div>
-        <EmailVerificationComponent />
+        <EmailVerificationSuccess/>
     </div>
   )
 }
